@@ -1,0 +1,19 @@
+var nrc__craft__laser__cutting_8h =
+[
+    [ "laser_cutting_get_analog_parameter", "nrc__craft__laser__cutting_8h.html#ac46c0fb3975096847b2a9698998acf81", null ],
+    [ "laser_cutting_get_analog_parameter_robot", "nrc__craft__laser__cutting_8h.html#aedfe4138f09dbfbb4a0491c11d780ef4", null ],
+    [ "laser_cutting_get_craft_parameter", "nrc__craft__laser__cutting_8h.html#a37545108582c146ef908d28c050beb62", null ],
+    [ "laser_cutting_get_craft_parameter_robot", "nrc__craft__laser__cutting_8h.html#a11adfd6289405e7aa9dbfe9d93f77ba9", null ],
+    [ "laser_cutting_get_global_parameter", "nrc__craft__laser__cutting_8h.html#a33deb2862d9fb0d01b508106a0df8274", null ],
+    [ "laser_cutting_get_global_parameter_robot", "nrc__craft__laser__cutting_8h.html#abe7a78508d332be0dab88bdc9ecfb102", null ],
+    [ "laser_cutting_get_io_parameter", "nrc__craft__laser__cutting_8h.html#a1cfb4f037a7f56fe2f03821ebe16f3b0", null ],
+    [ "laser_cutting_get_io_parameter_robot", "nrc__craft__laser__cutting_8h.html#a037007ad4fe421fa59aa38de3e7c3bb8", null ],
+    [ "laser_cutting_set_analog_parameter", "nrc__craft__laser__cutting_8h.html#a8bad56945132fb80a744be34a69f680a", null ],
+    [ "laser_cutting_set_analog_parameter_robot", "nrc__craft__laser__cutting_8h.html#aeb449d48f86f6a76c2cced68bbfdbf31", null ],
+    [ "laser_cutting_set_craft_parameter", "nrc__craft__laser__cutting_8h.html#aa404bd776c246a64ea4c6bb3da65abe3", null ],
+    [ "laser_cutting_set_craft_parameter_robot", "nrc__craft__laser__cutting_8h.html#a2279824da2315d77f69abef4c092bdbb", null ],
+    [ "laser_cutting_set_global_parameter", "nrc__craft__laser__cutting_8h.html#a044df5a99b1460463490719b9a970edc", null ],
+    [ "laser_cutting_set_global_parameter_robot", "nrc__craft__laser__cutting_8h.html#a62c7448928f01eea51e8c287f4f9d0c8", null ],
+    [ "laser_cutting_set_io_parameter", "nrc__craft__laser__cutting_8h.html#ac3c2d93ec7204cf0dce534dc251e2464", null ],
+    [ "laser_cutting_set_io_parameter_robot", "nrc__craft__laser__cutting_8h.html#a7b3a4bc9f14ca41ac5731c89958804d7", null ]
+];

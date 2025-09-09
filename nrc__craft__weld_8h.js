@@ -1,0 +1,25 @@
+var nrc__craft__weld_8h =
+[
+    [ "weld_get_config", "nrc__craft__weld_8h.html#a8a8e1291e40187e0a98f3dfe3e133174", null ],
+    [ "weld_get_config_robot", "nrc__craft__weld_8h.html#a853e7f6f1863389598c4b4f3248c446f", null ],
+    [ "weld_get_feed_wire_status", "nrc__craft__weld_8h.html#a835fde56c970f5c2955bb287293bb673", null ],
+    [ "weld_get_feed_wire_status_robot", "nrc__craft__weld_8h.html#a8be72c14dff4a365f93759c16757271d", null ],
+    [ "weld_get_monitor_status", "nrc__craft__weld_8h.html#ad9906221a58d6c99a5202f261a733c4b", null ],
+    [ "weld_get_monitor_status_robot", "nrc__craft__weld_8h.html#aa899322eabb124460d60edbc76b0f68b", null ],
+    [ "weld_get_wave_weld_param", "nrc__craft__weld_8h.html#af5c72e578f6e594fefffd4c19aa65d59", null ],
+    [ "weld_get_wave_weld_param_robot", "nrc__craft__weld_8h.html#af18dabac5710b625eaa45d9d0b272299", null ],
+    [ "weld_set_config", "nrc__craft__weld_8h.html#ab95e7bc08e21b83622c5a1cfb41153d6", null ],
+    [ "weld_set_config_robot", "nrc__craft__weld_8h.html#a8554d215574f61cdcd0d21033f24db7b", null ],
+    [ "weld_set_enable", "nrc__craft__weld_8h.html#af9b78b23c0a7828225960e2e5a3243fc", null ],
+    [ "weld_set_enable_robot", "nrc__craft__weld_8h.html#abd728b547d324f7c4c886f1cb6028176", null ],
+    [ "weld_set_feed_wire", "nrc__craft__weld_8h.html#a958d9a8f7c14ac757f3291922f513a38", null ],
+    [ "weld_set_feed_wire_robot", "nrc__craft__weld_8h.html#a8d37166c2d0aacbfd60b367c90fa16cb", null ],
+    [ "weld_set_hand_spot", "nrc__craft__weld_8h.html#a6f04f9d3c92309113fc285e96d44a1fe", null ],
+    [ "weld_set_hand_spot_robot", "nrc__craft__weld_8h.html#ac078747227f79997f91fe2b8989b9c32", null ],
+    [ "weld_set_rewind_wire", "nrc__craft__weld_8h.html#a335764640198898d0e769d0f387594c7", null ],
+    [ "weld_set_rewind_wire_robot", "nrc__craft__weld_8h.html#af669930741d292459ae8fc985f7af113", null ],
+    [ "weld_set_supply_gas", "nrc__craft__weld_8h.html#a085a118ce72de6fda6b5b9c2a582fad0", null ],
+    [ "weld_set_supply_gas_robot", "nrc__craft__weld_8h.html#aeda55929244ada4af2fa742fe819ee3c", null ],
+    [ "weld_set_wave_weld_param", "nrc__craft__weld_8h.html#acaf7ad09896fccbd98971a00c4a1903d", null ],
+    [ "weld_set_wave_weld_param_robot", "nrc__craft__weld_8h.html#a7a055e5e0f22eb3597b0985ca9e80e86", null ]
+];
