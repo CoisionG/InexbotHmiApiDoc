@@ -1,0 +1,1083 @@
+
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>猜数字双模式</title>
+  <style>
+    @import url("https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;700;800&family=Noto+Sans+SC:wght@400;500;700;900&display=swap");
+
+    :root {
+      --bg-top: #fff7d8;
+      --bg-bottom: #d8f0ee;
+      --panel: rgba(255, 255, 255, 0.78);
+      --panel-border: rgba(20, 45, 42, 0.14);
+      --ink: #162420;
+      --muted: #536864;
+      --accent-main: #d96900;
+      --accent-sub: #0f8d74;
+      --accent-warn: #ab2f1f;
+      --shadow: 0 18px 48px rgba(18, 45, 40, 0.16);
+      --radius-lg: 22px;
+      --radius-md: 14px;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      color: var(--ink);
+      font-family: "Manrope", "Noto Sans SC", sans-serif;
+      background:
+        radial-gradient(1300px 560px at -5% -10%, #ffe29b 0%, transparent 60%),
+        radial-gradient(900px 500px at 105% 5%, #95dbc7 0%, transparent 55%),
+        linear-gradient(165deg, var(--bg-top) 0%, var(--bg-bottom) 100%);
+      padding: 28px 16px 40px;
+    }
+
+    .app {
+      max-width: 980px;
+      margin: 0 auto;
+    }
+
+    .hero {
+      margin-bottom: 18px;
+    }
+
+    .hero h1 {
+      margin: 0 0 8px;
+      font-size: clamp(2rem, 5vw, 2.9rem);
+      font-family: "Noto Sans SC", "Manrope", sans-serif;
+      font-weight: 900;
+      line-height: 1.06;
+      letter-spacing: 0.02em;
+    }
+
+    .hero p {
+      margin: 0;
+      color: var(--muted);
+      font-size: clamp(0.98rem, 2.6vw, 1.08rem);
+    }
+
+    .tabs {
+      display: flex;
+      gap: 10px;
+      margin: 20px 0;
+      flex-wrap: wrap;
+    }
+
+    .tab-btn {
+      border: 1px solid var(--panel-border);
+      background: rgba(255, 255, 255, 0.7);
+      color: var(--ink);
+      font-size: 0.96rem;
+      font-weight: 700;
+      padding: 10px 16px;
+      border-radius: 999px;
+      cursor: pointer;
+      transition: transform 0.2s ease, background 0.2s ease, color 0.2s ease;
+    }
+
+    .tab-btn:hover {
+      transform: translateY(-1px);
+    }
+
+    .tab-btn.active {
+      background: linear-gradient(120deg, #f2fff8 0%, #d9fff4 100%);
+      border-color: rgba(15, 141, 116, 0.4);
+      color: #0d6553;
+    }
+
+    .panel {
+      display: none;
+      background: var(--panel);
+      backdrop-filter: blur(12px);
+      border: 1px solid var(--panel-border);
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow);
+      padding: 20px;
+      animation: panel-in 0.34s ease both;
+    }
+
+    .panel.active {
+      display: block;
+    }
+
+    @keyframes panel-in {
+      from {
+        opacity: 0;
+        transform: translateY(8px) scale(0.98);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+      }
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 14px;
+    }
+
+    @media (min-width: 860px) {
+      .grid {
+        grid-template-columns: 1.1fr 0.9fr;
+      }
+    }
+
+    .block {
+      border: 1px solid rgba(22, 36, 32, 0.12);
+      border-radius: var(--radius-md);
+      background: rgba(255, 255, 255, 0.72);
+      padding: 14px;
+    }
+
+    .block h2 {
+      margin: 0 0 6px;
+      font-size: 1.18rem;
+      font-weight: 800;
+      letter-spacing: 0.01em;
+    }
+
+    .hint {
+      color: var(--muted);
+      margin: 0 0 12px;
+      font-size: 0.93rem;
+      line-height: 1.5;
+    }
+
+    .row {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+      flex-wrap: wrap;
+      margin-bottom: 10px;
+    }
+
+    label {
+      font-size: 0.94rem;
+      color: #37534d;
+      font-weight: 700;
+    }
+
+    input[type="number"],
+    input[type="text"] {
+      width: 100%;
+      max-width: 240px;
+      border: 1px solid rgba(22, 36, 32, 0.22);
+      border-radius: 10px;
+      padding: 9px 10px;
+      font-size: 1rem;
+      font-family: "Manrope", "Noto Sans SC", sans-serif;
+      outline: none;
+      background: rgba(255, 255, 255, 0.95);
+    }
+
+    input:focus {
+      border-color: rgba(15, 141, 116, 0.65);
+      box-shadow: 0 0 0 3px rgba(15, 141, 116, 0.12);
+    }
+
+    button.action {
+      border: none;
+      border-radius: 10px;
+      padding: 9px 14px;
+      font-size: 0.96rem;
+      font-weight: 800;
+      letter-spacing: 0.01em;
+      cursor: pointer;
+      color: #fff;
+      background: linear-gradient(135deg, var(--accent-main), #ee8f1f);
+      transition: transform 0.18s ease, filter 0.18s ease;
+    }
+
+    button.action.secondary {
+      background: linear-gradient(135deg, #0f8d74, #20a58b);
+    }
+
+    button.action:hover {
+      transform: translateY(-1px);
+      filter: brightness(1.05);
+    }
+
+    button.action:disabled {
+      opacity: 0.55;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    .status {
+      min-height: 26px;
+      font-size: 0.95rem;
+      color: #2e4f49;
+      font-weight: 700;
+      margin-bottom: 6px;
+    }
+
+    .status.warn {
+      color: var(--accent-warn);
+    }
+
+    .status.done {
+      color: #0a765f;
+    }
+
+    .guess-box {
+      font-size: clamp(1.6rem, 5vw, 2.2rem);
+      line-height: 1;
+      font-weight: 900;
+      letter-spacing: 0.08em;
+      margin: 6px 0 12px;
+      color: #0a6a57;
+      word-break: break-all;
+    }
+
+    .pill {
+      display: inline-block;
+      padding: 4px 8px;
+      margin-right: 7px;
+      margin-bottom: 6px;
+      border-radius: 999px;
+      background: rgba(15, 141, 116, 0.12);
+      color: #0a6a57;
+      font-size: 0.84rem;
+      font-weight: 700;
+    }
+
+    .history {
+      max-height: 420px;
+      overflow: auto;
+      border-radius: 10px;
+      border: 1px solid rgba(22, 36, 32, 0.12);
+      background: rgba(255, 255, 255, 0.9);
+      padding: 8px;
+    }
+
+    .history table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.9rem;
+    }
+
+    .history th,
+    .history td {
+      text-align: left;
+      padding: 7px 6px;
+      border-bottom: 1px dashed rgba(22, 36, 32, 0.16);
+      vertical-align: top;
+    }
+
+    .history tr:last-child td {
+      border-bottom: none;
+    }
+
+    .small {
+      color: var(--muted);
+      font-size: 0.83rem;
+    }
+  </style>
+</head>
+<body>
+  <main class="app">
+    <section class="hero">
+      <h1>猜数字双模式</h1>
+      <p>一个静态网页，包含两个小游戏：你猜程序，或者程序猜你。</p>
+    </section>
+
+    <div class="tabs">
+      <button class="tab-btn active" data-target="panel-user">模式 A: 你猜程序</button>
+      <button class="tab-btn" data-target="panel-ai">模式 B: 程序猜你</button>
+      <button class="tab-btn" data-target="panel-helper">模式 C: 对战辅助</button>
+    </div>
+
+    <section id="panel-user" class="panel active">
+      <div class="grid">
+        <div class="block">
+          <h2>模式 A</h2>
+          <p class="hint">程序随机生成目标数字，你来猜。每次反馈 bulls（数字和位置都正确的个数）。支持 1~10 位。</p>
+
+          <div class="row">
+            <label for="user-n-digits">位数:</label>
+            <input id="user-n-digits" type="number" min="1" max="10" value="5" />
+            <button id="user-start" class="action">开始新局</button>
+          </div>
+
+          <div id="user-status" class="status">点击“开始新局”开始。</div>
+
+          <div class="row">
+            <input id="user-guess" type="text" placeholder="输入你的猜测" autocomplete="off" />
+            <button id="user-submit" class="action secondary" disabled>提交猜测</button>
+          </div>
+
+          <p class="small">提示: 允许前导 0，允许重复数字。</p>
+        </div>
+
+        <div class="block">
+          <h2>对局记录</h2>
+          <div class="row">
+            <span id="user-badge-attempts" class="pill">次数: 0</span>
+            <span id="user-badge-digits" class="pill">位数: -</span>
+          </div>
+          <div class="history">
+            <table>
+              <thead>
+                <tr>
+                  <th>回合</th>
+                  <th>猜测</th>
+                  <th>bulls</th>
+                </tr>
+              </thead>
+              <tbody id="user-history"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="panel-ai" class="panel">
+      <div class="grid">
+        <div class="block">
+          <h2>模式 B</h2>
+          <p class="hint">你先想一个数字，程序来猜。你只需反馈 bulls。为了浏览器性能，这里支持 1~6 位。</p>
+
+          <div class="row">
+            <label for="ai-n-digits">位数:</label>
+            <input id="ai-n-digits" type="number" min="1" max="6" value="5" />
+            <button id="ai-start" class="action">开始新局</button>
+          </div>
+
+          <div id="ai-status" class="status">点击“开始新局”后，程序会先给出第一个猜测。</div>
+          <div id="ai-current-guess" class="guess-box">-</div>
+
+          <div class="row">
+            <label for="ai-bulls">你反馈 bulls:</label>
+            <input id="ai-bulls" type="number" min="0" max="6" value="0" />
+            <button id="ai-submit" class="action secondary" disabled>提交反馈</button>
+            <button id="ai-undo" class="action" disabled>撤回上一步</button>
+          </div>
+
+          <p class="small">反馈必须是 0 到当前位数之间的整数，填错可“撤回上一步”后重填。</p>
+        </div>
+
+        <div class="block">
+          <h2>推理记录</h2>
+          <div class="row">
+            <span id="ai-badge-round" class="pill">当前回合: 0</span>
+            <span id="ai-badge-remain" class="pill">候选剩余: -</span>
+          </div>
+          <div class="history">
+            <table>
+              <thead>
+                <tr>
+                  <th>回合</th>
+                  <th>程序猜测</th>
+                  <th>你的 bulls</th>
+                </tr>
+              </thead>
+              <tbody id="ai-history"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="panel-helper" class="panel">
+      <div class="grid">
+        <div class="block">
+          <h2>模式 C</h2>
+          <p class="hint">和别人玩时，把你的猜测和对方反馈的 bulls 录入进来，页面会自动做一致性判断并推荐下一猜。支持 1~6 位。</p>
+
+          <div class="row">
+            <label for="helper-n-digits">位数:</label>
+            <input id="helper-n-digits" type="number" min="1" max="6" value="5" />
+            <button id="helper-start" class="action">开始辅助</button>
+          </div>
+
+          <div id="helper-status" class="status">点击“开始辅助”后，逐轮录入你的猜测和 bulls。</div>
+          <div id="helper-suggest" class="guess-box">-</div>
+
+          <div class="row">
+            <label for="helper-guess">你的猜测:</label>
+            <input id="helper-guess" type="text" autocomplete="off" placeholder="例如 01234" />
+          </div>
+
+          <div class="row">
+            <label for="helper-bulls">对方 bulls:</label>
+            <input id="helper-bulls" type="number" min="0" max="6" value="0" />
+            <button id="helper-add" class="action secondary" disabled>添加记录</button>
+            <button id="helper-undo" class="action" disabled>撤回上一步</button>
+          </div>
+
+          <p class="small">每轮先记录实际反馈，再参考推荐下一猜。若录入错了可撤回。</p>
+        </div>
+
+        <div class="block">
+          <h2>辅助记录</h2>
+          <div class="row">
+            <span id="helper-badge-round" class="pill">已记录回合: 0</span>
+            <span id="helper-badge-remain" class="pill">候选剩余: -</span>
+          </div>
+          <div class="history">
+            <table>
+              <thead>
+                <tr>
+                  <th>回合</th>
+                  <th>你的猜测</th>
+                  <th>对方 bulls</th>
+                </tr>
+              </thead>
+              <tbody id="helper-history"></tbody>
+            </table>
+          </div>
+
+          <h2>按位分析</h2>
+          <div class="history">
+            <table>
+              <thead>
+                <tr>
+                  <th>位次</th>
+                  <th>已确认</th>
+                  <th>已排除</th>
+                  <th>仍可能</th>
+                </tr>
+              </thead>
+              <tbody id="helper-position-analysis"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    function toCode(num, nDigits) {
+      return String(num).padStart(nDigits, "0");
+    }
+
+    function randomCode(nDigits) {
+      const max = 10 ** nDigits;
+      return toCode(Math.floor(Math.random() * max), nDigits);
+    }
+
+    function bulls(a, b) {
+      let count = 0;
+      for (let i = 0; i < a.length; i += 1) {
+        if (a[i] === b[i]) {
+          count += 1;
+        }
+      }
+      return count;
+    }
+
+    function setStatus(el, text, type) {
+      el.textContent = text;
+      el.classList.remove("warn", "done");
+      if (type) {
+        el.classList.add(type);
+      }
+    }
+
+    function switchTab(targetId) {
+      document.querySelectorAll(".tab-btn").forEach((btn) => {
+        btn.classList.toggle("active", btn.dataset.target === targetId);
+      });
+      document.querySelectorAll(".panel").forEach((panel) => {
+        panel.classList.toggle("active", panel.id === targetId);
+      });
+    }
+
+    document.querySelectorAll(".tab-btn").forEach((btn) => {
+      btn.addEventListener("click", () => switchTab(btn.dataset.target));
+    });
+
+    const userState = {
+      started: false,
+      nDigits: 0,
+      secret: "",
+      attempts: 0,
+      history: []
+    };
+
+    const userNDigitsInput = document.getElementById("user-n-digits");
+    const userStartBtn = document.getElementById("user-start");
+    const userGuessInput = document.getElementById("user-guess");
+    const userSubmitBtn = document.getElementById("user-submit");
+    const userStatus = document.getElementById("user-status");
+    const userHistoryEl = document.getElementById("user-history");
+    const userBadgeAttempts = document.getElementById("user-badge-attempts");
+    const userBadgeDigits = document.getElementById("user-badge-digits");
+
+    function renderUserHistory() {
+      userHistoryEl.innerHTML = "";
+      for (const item of userState.history) {
+        const tr = document.createElement("tr");
+        tr.innerHTML = `<td>${item.round}</td><td>${item.guess}</td><td>${item.bulls}</td>`;
+        userHistoryEl.appendChild(tr);
+      }
+      userBadgeAttempts.textContent = `次数: ${userState.attempts}`;
+      userBadgeDigits.textContent = `位数: ${userState.nDigits || "-"}`;
+    }
+
+    function startUserGame() {
+      const n = Number.parseInt(userNDigitsInput.value, 10);
+      if (!Number.isInteger(n) || n < 1 || n > 10) {
+        setStatus(userStatus, "位数必须是 1~10 的整数。", "warn");
+        return;
+      }
+      userState.started = true;
+      userState.nDigits = n;
+      userState.secret = randomCode(n);
+      userState.attempts = 0;
+      userState.history = [];
+      userGuessInput.value = "";
+      userGuessInput.maxLength = n;
+      userGuessInput.disabled = false;
+      userSubmitBtn.disabled = false;
+      renderUserHistory();
+      setStatus(userStatus, `新局开始: 请输入 ${n} 位数字。`, "");
+      userGuessInput.focus();
+    }
+
+    function submitUserGuess() {
+      if (!userState.started) {
+        setStatus(userStatus, "请先点击“开始新局”。", "warn");
+        return;
+      }
+      const guess = userGuessInput.value.trim();
+      if (!/^\d+$/.test(guess) || guess.length !== userState.nDigits) {
+        setStatus(userStatus, `请输入准确的 ${userState.nDigits} 位数字。`, "warn");
+        return;
+      }
+
+      userState.attempts += 1;
+      const b = bulls(userState.secret, guess);
+      userState.history.unshift({
+        round: userState.attempts,
+        guess,
+        bulls: `${b}/${userState.nDigits}`
+      });
+      renderUserHistory();
+
+      if (b === userState.nDigits) {
+        setStatus(
+          userStatus,
+          `猜中了: ${userState.secret}，共 ${userState.attempts} 次。`,
+          "done"
+        );
+        userSubmitBtn.disabled = true;
+        userGuessInput.disabled = true;
+      } else {
+        setStatus(userStatus, `本轮 bulls: ${b}/${userState.nDigits}。继续猜。`, "");
+      }
+      userGuessInput.value = "";
+      userGuessInput.focus();
+    }
+
+    userStartBtn.addEventListener("click", startUserGame);
+    userSubmitBtn.addEventListener("click", submitUserGuess);
+    userGuessInput.addEventListener("keydown", (event) => {
+      if (event.key === "Enter") {
+        submitUserGuess();
+      }
+    });
+
+    const aiState = {
+      started: false,
+      nDigits: 0,
+      round: 0,
+      currentGuess: "",
+      history: [],
+      lastCandidateCount: 0
+    };
+
+    const aiNDigitsInput = document.getElementById("ai-n-digits");
+    const aiStartBtn = document.getElementById("ai-start");
+    const aiStatus = document.getElementById("ai-status");
+    const aiCurrentGuessEl = document.getElementById("ai-current-guess");
+    const aiBullsInput = document.getElementById("ai-bulls");
+    const aiSubmitBtn = document.getElementById("ai-submit");
+    const aiUndoBtn = document.getElementById("ai-undo");
+    const aiHistoryEl = document.getElementById("ai-history");
+    const aiBadgeRound = document.getElementById("ai-badge-round");
+    const aiBadgeRemain = document.getElementById("ai-badge-remain");
+
+    function renderAiHistory() {
+      aiHistoryEl.innerHTML = "";
+      for (const item of aiState.history) {
+        const tr = document.createElement("tr");
+        tr.innerHTML = `<td>${item.round}</td><td>${item.guess}</td><td>${item.bulls}</td>`;
+        aiHistoryEl.appendChild(tr);
+      }
+      aiBadgeRound.textContent = `当前回合: ${aiState.round}`;
+      aiBadgeRemain.textContent =
+        aiState.lastCandidateCount > 0 ? `候选剩余: ${aiState.lastCandidateCount}` : "候选剩余: -";
+      aiUndoBtn.disabled = !aiState.started || aiState.history.length === 0;
+    }
+
+    function satisfiesHistory(candidate, history) {
+      for (let i = 0; i < history.length; i += 1) {
+        const item = history[i];
+        if (bulls(candidate, item.guess) !== item.bulls) {
+          return false;
+        }
+      }
+      return true;
+    }
+
+    function sampleCandidateSummary(nDigits, history, sampleSize = 500, exactLimit = 1200) {
+      const maxCode = 10 ** nDigits;
+      let count = 0;
+      let first = null;
+      const sample = [];
+      let exact = [];
+      const positionMasks = new Array(nDigits).fill(0);
+
+      for (let i = 0; i < maxCode; i += 1) {
+        const code = toCode(i, nDigits);
+        if (!satisfiesHistory(code, history)) {
+          continue;
+        }
+        count += 1;
+        for (let p = 0; p < nDigits; p += 1) {
+          const digit = code.charCodeAt(p) - 48;
+          positionMasks[p] |= 1 << digit;
+        }
+        if (first === null) {
+          first = code;
+        }
+        if (exact) {
+          exact.push(code);
+          if (exact.length > exactLimit) {
+            exact = null;
+          }
+        }
+        if (sample.length < sampleSize) {
+          sample.push(code);
+        } else {
+          const r = Math.floor(Math.random() * count);
+          if (r < sampleSize) {
+            sample[r] = code;
+          }
+        }
+      }
+
+      const positionOptions = positionMasks.map((mask) => {
+        const digits = [];
+        for (let d = 0; d <= 9; d += 1) {
+          if (mask & (1 << d)) {
+            digits.push(String(d));
+          }
+        }
+        return digits;
+      });
+
+      return { count, first, sample, exact, positionOptions };
+    }
+
+    function chooseBestGuess(answers, nDigits, extraProbeCount = 180) {
+      if (!answers.length) {
+        return null;
+      }
+      if (answers.length === 1) {
+        return answers[0];
+      }
+
+      const guessPool = [...answers];
+      const answerSet = new Set(answers);
+
+      while (guessPool.length < answers.length + extraProbeCount) {
+        const probe = randomCode(nDigits);
+        if (!answerSet.has(probe)) {
+          guessPool.push(probe);
+        }
+      }
+
+      let bestGuess = guessPool[0];
+      let bestScore = Number.POSITIVE_INFINITY;
+      let bestInAnswer = answerSet.has(bestGuess);
+
+      for (let i = 0; i < guessPool.length; i += 1) {
+        const g = guessPool[i];
+        const buckets = new Array(nDigits + 1).fill(0);
+        for (let j = 0; j < answers.length; j += 1) {
+          const b = bulls(answers[j], g);
+          buckets[b] += 1;
+        }
+        const score = Math.max(...buckets);
+        const inAnswer = answerSet.has(g);
+        if (score < bestScore || (score === bestScore && inAnswer && !bestInAnswer)) {
+          bestScore = score;
+          bestGuess = g;
+          bestInAnswer = inAnswer;
+        }
+      }
+
+      return bestGuess;
+    }
+
+    function calcAiCandidateCount() {
+      if (!aiState.started) {
+        return 0;
+      }
+      if (aiState.history.length === 0) {
+        return 10 ** aiState.nDigits;
+      }
+      const summary = sampleCandidateSummary(aiState.nDigits, aiState.history, 1, 0);
+      return summary.count;
+    }
+
+    function startAiGame() {
+      const n = Number.parseInt(aiNDigitsInput.value, 10);
+      if (!Number.isInteger(n) || n < 1 || n > 6) {
+        setStatus(aiStatus, "位数必须是 1~6 的整数。", "warn");
+        return;
+      }
+
+      aiState.started = true;
+      aiState.nDigits = n;
+      aiState.round = 1;
+      aiState.history = [];
+      aiState.lastCandidateCount = 10 ** n;
+      aiState.currentGuess = "0".repeat(n);
+
+      aiCurrentGuessEl.textContent = aiState.currentGuess;
+      aiBullsInput.value = "0";
+      aiBullsInput.min = "0";
+      aiBullsInput.max = String(n);
+      aiSubmitBtn.disabled = false;
+      aiUndoBtn.disabled = true;
+      renderAiHistory();
+      setStatus(
+        aiStatus,
+        `你先想好 ${n} 位数。程序第 1 猜是 ${aiState.currentGuess}，请反馈 bulls。`,
+        ""
+      );
+      aiBullsInput.focus();
+    }
+
+    function submitAiFeedback() {
+      if (!aiState.started) {
+        setStatus(aiStatus, "请先点击“开始新局”。", "warn");
+        return;
+      }
+
+      const fbRaw = aiBullsInput.value.trim();
+      if (!/^\d+$/.test(fbRaw)) {
+        setStatus(aiStatus, "bulls 必须是整数。", "warn");
+        return;
+      }
+      const b = Number.parseInt(fbRaw, 10);
+      if (b < 0 || b > aiState.nDigits) {
+        setStatus(aiStatus, `bulls 必须在 0~${aiState.nDigits}。`, "warn");
+        return;
+      }
+
+      aiState.history.unshift({
+        round: aiState.round,
+        guess: aiState.currentGuess,
+        bulls: b
+      });
+      renderAiHistory();
+
+      if (b === aiState.nDigits) {
+        setStatus(
+          aiStatus,
+          `程序猜中: ${aiState.currentGuess}，总共 ${aiState.round} 轮。`,
+          "done"
+        );
+        aiSubmitBtn.disabled = true;
+        return;
+      }
+
+      setStatus(aiStatus, "计算下一次猜测中...", "");
+
+      window.setTimeout(() => {
+        const summary = sampleCandidateSummary(aiState.nDigits, aiState.history, 500, 1200);
+        aiState.lastCandidateCount = summary.count;
+
+        if (summary.count === 0) {
+          setStatus(aiStatus, "没有候选符合反馈，请检查你是否有一轮反馈填错。", "warn");
+          aiSubmitBtn.disabled = true;
+          renderAiHistory();
+          return;
+        }
+
+        let nextGuess;
+        if (summary.count === 1) {
+          nextGuess = summary.first;
+        } else if (summary.exact) {
+          nextGuess = chooseBestGuess(summary.exact, aiState.nDigits, 220);
+        } else {
+          nextGuess = chooseBestGuess(summary.sample, aiState.nDigits, 180);
+        }
+
+        aiState.round += 1;
+        aiState.currentGuess = nextGuess;
+        aiCurrentGuessEl.textContent = aiState.currentGuess;
+        renderAiHistory();
+        setStatus(
+          aiStatus,
+          `第 ${aiState.round} 轮猜测已生成，请继续反馈 bulls。`,
+          ""
+        );
+      }, 0);
+    }
+
+    function undoAiFeedback() {
+      if (!aiState.started) {
+        setStatus(aiStatus, "请先点击“开始新局”。", "warn");
+        return;
+      }
+      if (aiState.history.length === 0) {
+        setStatus(aiStatus, "还没有可撤回的反馈。", "warn");
+        return;
+      }
+
+      const last = aiState.history.shift();
+      aiState.round = last.round;
+      aiState.currentGuess = last.guess;
+      aiState.lastCandidateCount = calcAiCandidateCount();
+
+      aiCurrentGuessEl.textContent = aiState.currentGuess;
+      aiSubmitBtn.disabled = false;
+      renderAiHistory();
+
+      aiBullsInput.value = String(last.bulls);
+      aiBullsInput.focus();
+      aiBullsInput.select();
+      setStatus(aiStatus, `已撤回第 ${last.round} 轮反馈，请修改 bulls 后重新提交。`, "");
+    }
+
+    aiStartBtn.addEventListener("click", startAiGame);
+    aiSubmitBtn.addEventListener("click", submitAiFeedback);
+    aiUndoBtn.addEventListener("click", undoAiFeedback);
+    aiBullsInput.addEventListener("keydown", (event) => {
+      if (event.key === "Enter") {
+        submitAiFeedback();
+      }
+    });
+
+    const helperState = {
+      started: false,
+      nDigits: 0,
+      history: [],
+      lastCandidateCount: 0,
+      suggestion: "-",
+      positionPossible: []
+    };
+
+    const helperNDigitsInput = document.getElementById("helper-n-digits");
+    const helperStartBtn = document.getElementById("helper-start");
+    const helperStatus = document.getElementById("helper-status");
+    const helperSuggestEl = document.getElementById("helper-suggest");
+    const helperGuessInput = document.getElementById("helper-guess");
+    const helperBullsInput = document.getElementById("helper-bulls");
+    const helperAddBtn = document.getElementById("helper-add");
+    const helperUndoBtn = document.getElementById("helper-undo");
+    const helperHistoryEl = document.getElementById("helper-history");
+    const helperPositionAnalysisEl = document.getElementById("helper-position-analysis");
+    const helperBadgeRound = document.getElementById("helper-badge-round");
+    const helperBadgeRemain = document.getElementById("helper-badge-remain");
+
+    function makeAllDigits() {
+      return ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9"];
+    }
+
+    function formatDigitList(digits) {
+      return digits.length ? digits.join(" ") : "-";
+    }
+
+    function renderHelperHistory() {
+      helperHistoryEl.innerHTML = "";
+      for (const item of helperState.history) {
+        const tr = document.createElement("tr");
+        tr.innerHTML = `<td>${item.round}</td><td>${item.guess}</td><td>${item.bulls}</td>`;
+        helperHistoryEl.appendChild(tr);
+      }
+      helperBadgeRound.textContent = `已记录回合: ${helperState.history.length}`;
+      helperBadgeRemain.textContent =
+        helperState.lastCandidateCount > 0 ? `候选剩余: ${helperState.lastCandidateCount}` : "候选剩余: -";
+      helperUndoBtn.disabled = !helperState.started || helperState.history.length === 0;
+    }
+
+    function renderHelperPositionAnalysis() {
+      helperPositionAnalysisEl.innerHTML = "";
+      if (!helperState.started || helperState.nDigits === 0) {
+        return;
+      }
+
+      for (let i = 0; i < helperState.nDigits; i += 1) {
+        const possible = helperState.positionPossible[i] || [];
+        const possibleSet = new Set(possible);
+        const confirmed = possible.length === 1 ? possible : [];
+        const excluded = [];
+        for (let d = 0; d <= 9; d += 1) {
+          const digit = String(d);
+          if (!possibleSet.has(digit)) {
+            excluded.push(digit);
+          }
+        }
+
+        const tr = document.createElement("tr");
+        tr.innerHTML = `
+          <td>第 ${i + 1} 位</td>
+          <td>${formatDigitList(confirmed)}</td>
+          <td>${formatDigitList(excluded)}</td>
+          <td>${formatDigitList(possible)}</td>
+        `;
+        helperPositionAnalysisEl.appendChild(tr);
+      }
+    }
+
+    function pickHelperSuggestion(summary) {
+      if (summary.count === 0) {
+        return "-";
+      }
+      if (summary.count === 1) {
+        return summary.first;
+      }
+      if (summary.exact) {
+        return chooseBestGuess(summary.exact, helperState.nDigits, 220) || summary.first;
+      }
+      return chooseBestGuess(summary.sample, helperState.nDigits, 180) || summary.first;
+    }
+
+    function refreshHelperInference() {
+      const summary = sampleCandidateSummary(helperState.nDigits, helperState.history, 500, 1200);
+      helperState.lastCandidateCount = summary.count;
+      helperState.suggestion = pickHelperSuggestion(summary);
+      helperState.positionPossible = summary.positionOptions;
+      helperSuggestEl.textContent = helperState.suggestion;
+      renderHelperHistory();
+      renderHelperPositionAnalysis();
+      return summary;
+    }
+
+    function startHelperMode() {
+      const n = Number.parseInt(helperNDigitsInput.value, 10);
+      if (!Number.isInteger(n) || n < 1 || n > 6) {
+        setStatus(helperStatus, "位数必须是 1~6 的整数。", "warn");
+        return;
+      }
+
+      helperState.started = true;
+      helperState.nDigits = n;
+      helperState.history = [];
+      helperState.lastCandidateCount = 10 ** n;
+      helperState.suggestion = "0".repeat(n);
+      helperState.positionPossible = Array.from({ length: n }, () => makeAllDigits());
+
+      helperGuessInput.value = helperState.suggestion;
+      helperGuessInput.maxLength = n;
+      helperGuessInput.disabled = false;
+      helperBullsInput.value = "0";
+      helperBullsInput.min = "0";
+      helperBullsInput.max = String(n);
+      helperBullsInput.disabled = false;
+      helperAddBtn.disabled = false;
+      helperUndoBtn.disabled = true;
+      helperSuggestEl.textContent = helperState.suggestion;
+      renderHelperHistory();
+      renderHelperPositionAnalysis();
+      setStatus(
+        helperStatus,
+        `辅助已开始（${n} 位）。先按实际对局录入一轮，再参考推荐下一猜。`,
+        ""
+      );
+      helperGuessInput.focus();
+      helperGuessInput.select();
+    }
+
+    function addHelperRecord() {
+      if (!helperState.started) {
+        setStatus(helperStatus, "请先点击“开始辅助”。", "warn");
+        return;
+      }
+
+      const guess = helperGuessInput.value.trim();
+      if (!/^\d+$/.test(guess) || guess.length !== helperState.nDigits) {
+        setStatus(helperStatus, `猜测必须是 ${helperState.nDigits} 位数字。`, "warn");
+        return;
+      }
+
+      const fbRaw = helperBullsInput.value.trim();
+      if (!/^\d+$/.test(fbRaw)) {
+        setStatus(helperStatus, "bulls 必须是整数。", "warn");
+        return;
+      }
+      const b = Number.parseInt(fbRaw, 10);
+      if (b < 0 || b > helperState.nDigits) {
+        setStatus(helperStatus, `bulls 必须在 0~${helperState.nDigits}。`, "warn");
+        return;
+      }
+
+      const nextRound = helperState.history.length + 1;
+      const nextHistory = [{ round: nextRound, guess, bulls: b }, ...helperState.history];
+      const consistency = sampleCandidateSummary(helperState.nDigits, nextHistory, 1, 0);
+      if (consistency.count === 0) {
+        setStatus(helperStatus, "这条记录与历史冲突，候选会变成 0。请检查本轮猜测或 bulls。", "warn");
+        return;
+      }
+
+      helperState.history.unshift({
+        round: nextRound,
+        guess,
+        bulls: b
+      });
+
+      const summary = refreshHelperInference();
+      if (b === helperState.nDigits) {
+        setStatus(helperStatus, "这轮已 bulls 满值，说明命中了目标。若填错可撤回后重录。", "done");
+      } else if (summary.count === 1) {
+        setStatus(helperStatus, `已缩小到唯一候选: ${summary.first}。`, "done");
+      } else {
+        setStatus(helperStatus, `已记录第 ${nextRound} 轮，推荐下一猜: ${helperState.suggestion}。`, "");
+      }
+
+      helperGuessInput.value = helperState.suggestion === "-" ? "" : helperState.suggestion;
+      helperGuessInput.focus();
+      helperGuessInput.select();
+    }
+
+    function undoHelperRecord() {
+      if (!helperState.started) {
+        setStatus(helperStatus, "请先点击“开始辅助”。", "warn");
+        return;
+      }
+      if (helperState.history.length === 0) {
+        setStatus(helperStatus, "还没有可撤回的记录。", "warn");
+        return;
+      }
+
+      const last = helperState.history.shift();
+      refreshHelperInference();
+
+      helperGuessInput.value = last.guess;
+      helperBullsInput.value = String(last.bulls);
+      helperAddBtn.disabled = false;
+      helperGuessInput.focus();
+      helperGuessInput.select();
+      setStatus(helperStatus, `已撤回第 ${last.round} 轮，可直接修改后重新添加。`, "");
+    }
+
+    helperStartBtn.addEventListener("click", startHelperMode);
+    helperAddBtn.addEventListener("click", addHelperRecord);
+    helperUndoBtn.addEventListener("click", undoHelperRecord);
+    helperGuessInput.addEventListener("keydown", (event) => {
+      if (event.key === "Enter") {
+        addHelperRecord();
+      }
+    });
+    helperBullsInput.addEventListener("keydown", (event) => {
+      if (event.key === "Enter") {
+        addHelperRecord();
+      }
+    });
+  </script>
+</body>
+</html>
